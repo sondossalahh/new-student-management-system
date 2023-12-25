@@ -1,0 +1,72 @@
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.springframework.org/schema/data/jpa"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/data/jpa
+    http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+<repositories base-package="org.example.repository"/>
+    <beans:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <beans:property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+        <beans:property name="url" value="jdbc:mysql://localhost:3306/mydatabase" />
+        <beans:property name="username" value="root" />
+        <beans:property name="password" value="12345" />
+    </beans:bean>
+
+    <beans:bean id="jpaVendorAdapter"
+                class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <beans:property name="database" value="MYSQL" />
+        <beans:property name="showSql" value="true" />
+        <beans:property name="generateDdl" value="true" />
+        <beans:property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
+    </beans:bean>
+
+    <beans:bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <beans:property name="dataSource" ref="dataSource"/>
+        <beans:property name="packagesToScan" value="org.example.model"/>
+        <beans:property name="jpaVendorAdapter">
+            <beans:bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <beans:property name="showSql" value="true" />
+            </beans:bean>
+        </beans:property>
+
+        <beans:property name="jpaPropertyMap">
+            <beans:map>
+                <beans:entry key="hibernate.dialect"
+                       value="org.hibernate.dialect.MySQLDialect" />
+                <beans:entry key="hibernate.hbm2ddl.auto" value="create"></beans:entry>
+                <beans:entry key="hibernate.format_sql" value="true"></beans:entry>
+            </beans:map>
+        </beans:property>
+    </beans:bean>
+
+    <beans:bean id="courseService" class="org.example.service.CourseService">
+       <beans:constructor-arg ref="courseRepository"/>
+    </beans:bean>
+
+    <beans:bean id="quizService" class="org.example.service.QuizService">
+        <beans:constructor-arg ref="quizRepository"/>
+    </beans:bean>
+    <beans:bean id="studentService" class="org.example.service.StudentService">
+        <beans:constructor-arg ref="studentRepository"/>
+    </beans:bean>
+    <beans:bean id="teacherService" class="org.example.service.TeacherService">
+        <beans:constructor-arg ref="teacherRepository"/>
+    </beans:bean>
+
+    <beans:bean id="quizController" class="org.example.controller.QuizController">
+        <beans:constructor-arg ref="quizService"/>
+    </beans:bean>
+    <beans:bean id="courseController" class="org.example.controller.CourseController">
+        <beans:constructor-arg ref="courseService"/>
+    </beans:bean>
+    <beans:bean id="studentController" class="org.example.controller.StudentController">
+        <beans:constructor-arg ref="studentService"/>
+    </beans:bean>
+    <beans:bean id="teacherController" class="org.example.controller.TeacherController">
+        <beans:constructor-arg ref="teacherService"/>
+    </beans:bean>
+
+
+</beans:beans>
